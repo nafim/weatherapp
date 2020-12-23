@@ -1,36 +1,28 @@
 const express = require('express');
 const app = express();
-var axios = require("axios");
-var cookieParser = require('cookie-parser');
-app.use(cookieParser());
-
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
+app.use(cookieParser());
+app.use(require('./controllers'));
+
 const port = 3000;
 
-app.set('view engine', 'pug')
-app.get('/', (req, res) => {  
-  const zip = req.query.zipcode || req.cookies.zipcode || "02446" ;
-  const queryParams = new URLSearchParams({
-    zip,
-    appid: process.env.OWM_API_KEY
+// Connect to database
+const mongoose = require('mongoose');
+mongoose.connect(process.env.MONGODB_STRING, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true 
+});
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  console.log("we're connected!");
 });
 
-  axios('http://api.openweathermap.org/data/2.5/weather?' + queryParams)
-  .then(response => {
-    const conditions = response.data.weather[0].main;
-    const city = response.data.name;
-    const temperature = (response.data.main.temp - 273.15) * 9/5 + 32;
-    const humidity = response.data.main.humidity;
-    const speed = response.data.wind.speed;
-    const degree = response.data.wind.deg;
-    const imgURL = `http://openweathermap.org/img/wn/${response.data.weather[0].icon}@4x.png`;
-    res.cookie("zipcode", zip);
-    res.render('weather', {conditions, city, temperature, humidity, speed, degree, imgURL});
-  })
-  .catch(error => {
-      console.log(error);
-  });
-});
+// set rendering engine
+app.set('view engine', 'pug');
+
+app.use(require('./controllers'));
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
