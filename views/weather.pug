@@ -15,7 +15,10 @@ head
           button.btn.btn-primary(type='submit') Enter
     .card.mx-auto(style='width: 18rem;')
       .card-body
-        h5.card-title Weather
+        h5.card-title Weather in #{city}
         img(src=imgURL alt='')
-        h6 The weather in #{city} is: #{conditions}
+        h6 Condition: #{conditions}
+        h6 Temperature: #{temperature}°F
+        h6 Humidity: #{humidity}%
+        h6 Wind: #{speed} m/s, #{degree}°
 script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js' integrity='sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW' crossorigin='anonymous')
