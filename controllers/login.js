@@ -8,7 +8,7 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/login', passport.authenticate('local'), (req, res) => {
-    res.send(req.user.email);
+    res.redirect('/');
 });
 
 app.get('/user', (req, res) => {

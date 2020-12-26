@@ -10,8 +10,8 @@ var UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    location: {
-        type: String,
+    locations: {
+        type: [String],
         required: false
     },
     resetKey: {
