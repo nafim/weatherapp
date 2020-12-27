@@ -8,6 +8,8 @@ head
   .mx-auto(style='width: 70%;')
     .card.mx-auto(style='width: 18rem;')
       .card-body
+        if messages.alert
+          .alert.alert-warning(role="alert") #{messages.alert}
         form(action="/" method="get")
           h5.card-title Enter your zipcode
           .input-group.mb-3

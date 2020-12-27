@@ -25,5 +25,5 @@ app.set('view engine', 'pug');
 app.use(require('./controllers'));
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`Weather app listening at http://localhost:${port}`);
 });
