@@ -8,6 +8,8 @@ head
   .mx-auto(style='width: 70%;')
     .card.mx-auto(style='width: 18rem;')
       .card-body
+        if messages.error
+          .alert.alert-danger(role="alert") #{messages.error}
         form(action="/registration" method="post")
           h5.card-title Sign Up
           .input-group.mb-3
@@ -16,5 +18,8 @@ head
             input.form-control(type='password' placeholder='password' aria-label='password' id="password" name="password")
           .input-group.mb-3
             input.form-control(type='password' placeholder='confirm password' aria-label='confirm password' id="confirmPassword" name="confirmPassword")
+          .input-group.mb-3
+            .g-recaptcha(data-sitekey=sitekey)
           button.btn.btn-primary(type='submit') Sign Up
 script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js' integrity='sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW' crossorigin='anonymous')
+script(src="https://www.google.com/recaptcha/api.js" async defer)

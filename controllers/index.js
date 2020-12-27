@@ -1,10 +1,13 @@
 const express = require("express");
 const app = express.Router();
 const bodyParser = require('body-parser');
+const flash = require('express-flash');
+const cookieParser = require('cookie-parser');
 
 app.use(bodyParser.urlencoded({
     extended: false
 }));
+app.use(bodyParser.json());
 
 // passport configuration
 const passport = require('passport');
@@ -39,9 +42,11 @@ passport.deserializeUser(function (_id, done) {
     });
 });
 
+app.use(cookieParser(process.env.SESSION_SECRET));
 app.use(session({ secret: process.env.SESSION_SECRET }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash());
 
 app.use(require('./home'));
 app.use(require('./login'));
