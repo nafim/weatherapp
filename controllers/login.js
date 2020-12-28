@@ -7,9 +7,11 @@ app.get('/login', (req, res) => {
     res.render('login');
 });
 
-app.post('/login', passport.authenticate('local'), (req, res) => {
-    res.redirect('/');
-});
+app.post('/login', passport.authenticate('local', {
+    successsRedirect: '/',
+    failureRedirect: '/login',
+    failureFlash: 'Invalid username and password combination'
+}));
 
 app.get('/user', (req, res) => {
     if (req.user) return res.send(req.user.email);

@@ -42,8 +42,25 @@ passport.deserializeUser(function (_id, done) {
     });
 });
 
+
+const MongoStore = require('connect-mongo')(session);
+const mongoose = require('mongoose');
+
+
 app.use(cookieParser(process.env.SESSION_SECRET));
-app.use(session({ secret: process.env.SESSION_SECRET }));
+app.use(session({ 
+    secret: process.env.SESSION_SECRET, 
+    resave: false, 
+    saveUninitialized: true, 
+    cookie: {
+        // 2 hours since unit is in milliseconds
+        maxAge: 2*60*1000 
+    },
+    store: new MongoStore({
+        mongooseConnection: mongoose.connection
+    })}
+    )
+);
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());

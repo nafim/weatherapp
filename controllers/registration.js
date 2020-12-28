@@ -7,7 +7,21 @@ const { body, validationResult } = require('express-validator');
 const validateRecaptcha = require('../middlewares/recaptcha').validateRecaptcha;
 const passport = require('passport');
 
-// Recaptchas
+// Validate email is unique
+const validateUniqueEmail = (req, res, next) => {
+    User.exists({ email: req.body.email })
+    .then(notUnique => {
+        if (notUnique) {
+            req.flash('error', 'User with this email already exists');
+            return res.redirect('/registration');
+        } else {
+            next();
+        }
+    })
+    .catch(err => {
+        next(err);
+    });
+};
 
 app.get('/registration', (req, res) => {
     res.render('registration', { sitekey: process.env.RECAPTCHA_SITE });
@@ -17,6 +31,7 @@ app.get('/registration', (req, res) => {
 app.post(
     '/registration',
     body('email').isEmail(),
+    validateUniqueEmail,
     body('password').isLength({ min: 5 }),
     validateRecaptcha,
     (req, res, next) => {

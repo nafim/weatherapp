@@ -8,6 +8,8 @@ head
   .mx-auto(style='width: 70%;')
     .card.mx-auto(style='width: 18rem;')
       .card-body
+        if messages.error
+          .alert.alert-danger(role="alert") #{messages.error}
         form(action="/login" method="post")
           h5.card-title Login
           .input-group.mb-3
