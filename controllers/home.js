@@ -3,7 +3,7 @@ const app = express.Router();
 const axios = require("axios");
 const User = require('../models/user');
 
-app.get('/', (req, res) => {
+app.get('/', (req, res, next) => {
     const zip = req.query.zipcode || req.cookies.zipcode || "02446";
     const queryParams = new URLSearchParams({
         zip,
@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
             res.render('weather', locals);
         })
         .catch(error => {
-            console.log(error);
+            next(error);
         });
 });
 

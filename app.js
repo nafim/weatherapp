@@ -22,7 +22,24 @@ db.once('open', function() {
 // set rendering engine
 app.set('view engine', 'pug');
 
+// static file serve
+app.use(express.static('public'));
+
 app.use(require('./controllers'));
+
+// Error handler
+const notFoundHandler = (req, res, next) => {
+  return res.render('error', {errorMessage: "Error 404"});
+};
+
+// Error handler
+const errorHandler = (err, req, res, next) => {
+  console.error(err.toString());
+  return res.render('error', {errorMessage: "We are very sorry for any inconveniences, please try again later."});
+};
+
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Weather app listening at http://localhost:${port}`);

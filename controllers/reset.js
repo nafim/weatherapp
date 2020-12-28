@@ -9,8 +9,9 @@ const crypto = require('crypto');
 const nodemailer = require("nodemailer");
 const mg = require("nodemailer-mailgun-transport");
 const pug = require("pug");
+const { nextTick } = require("process");
 
-function sendEmail(resetKey) {
+function sendEmail(resetKey, cb) {
     const mailgunAuth = {
         auth: {
             api_key: process.env.MAILGUN_KEY,
@@ -27,15 +28,13 @@ function sendEmail(resetKey) {
         html: html
     };
     smtpTransport.sendMail(mailOptions, function (error, response) {
-        if (error) {
-            console.log(error);
-        } else {
-            console.log("Successfully sent email.");
-        }
-    })
+        return cb(error);
+    });
 }
 
-function attemptPasswordReset(email) {
+// Password reset function
+// cb(error) will be called with true if error occurs
+function attemptPasswordReset(email, cb) {
     User.findOne({ email }, (err, user) => {
         if (err) return;
         if (!user) return;
@@ -43,7 +42,7 @@ function attemptPasswordReset(email) {
         const resetKey = buf.toString('hex');
         user.resetKey = resetKey;
         user.save();
-        sendEmail(resetKey);
+        sendEmail(resetKey, cb);
     });
 }
 
@@ -73,7 +72,7 @@ app.get('/passwordchange/:key', (req, res) => {
 app.post('/reset',
     validateRecaptcha,
     body('email').isEmail(),
-    (req, res) => {
+    (req, res, next) => {
         const errors = validationResult(req);
         // recaptcha check
         if (!req.recaptchaVerified) {
@@ -83,9 +82,14 @@ app.post('/reset',
             req.flash('error', 'Invalid Password');
             return res.redirect('/reset');
         } else {
-            attemptPasswordReset(req.body.email);
-            req.flash('alert', 'Reset email sent');
-            res.redirect('/');
+            attemptPasswordReset(req.body.email, (err) => {
+                if (err) {
+                    return next(err);
+                } else {
+                    req.flash('alert', "If the email is good, a password reset will be sent.");
+                    res.redirect('/');
+                }
+            });
         }
     });
 

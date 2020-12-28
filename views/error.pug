@@ -8,14 +8,7 @@ head
   .mx-auto(style='width: 70%;')
     .card.mx-auto(style='width: 18rem;')
       .card-body
-        form(action="/login" method="post")
-          h5.card-title Login
-          .input-group.mb-3
-            input.form-control(type='text' placeholder='email' aria-label='email' id="email" name="email")
-          .input-group.mb-3
-            input.form-control(type='password' placeholder='password' aria-label='password' id="password" name="password")
-          button.btn.btn-primary(type='submit') Login
-        p Don't have an account? #[a(href="/registration") Sign up]
-        p #[a(href="/reset") Forgot password?]
+        h1 Oops, an error occured
+        p #{errorMessage}
         
 script(src='/js/bootstrap.bundle.min.js' integrity='sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW' crossorigin='anonymous')
