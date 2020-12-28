@@ -5,6 +5,7 @@ const User = require('../models/user');
 const FormData = require('form-data');
 const { body, validationResult } = require('express-validator');
 const validateRecaptcha = require('../middlewares/recaptcha').validateRecaptcha;
+const passport = require('passport');
 
 // Recaptchas
 
@@ -18,7 +19,7 @@ app.post(
     body('email').isEmail(),
     body('password').isLength({ min: 5 }),
     validateRecaptcha,
-    (req, res) => {
+    (req, res, next) => {
         // recaptcha check
         if (!req.recaptchaVerified) {
             req.flash('error', 'Failed recaptcha check');
@@ -40,12 +41,16 @@ app.post(
             });
             user.save(function (err, user) {
                 if (err) return console.error(err);
+                next();
             });
         } else {
             req.flash('error', 'Passwords do not match');
             return res.redirect('/registration');
         }
+    },
+    passport.authenticate('local'),
+    (req, res) => {
         res.redirect('/');
-});
+    });
 
 module.exports = app;
