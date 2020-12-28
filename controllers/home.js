@@ -21,7 +21,7 @@ app.get('/', (req, res, next) => {
             locals.humidity = response.data.main.humidity;
             locals.speed = response.data.wind.speed;
             locals.degree = response.data.wind.deg;
-            locals.imgURL = `http://openweathermap.org/img/wn/${response.data.weather[0].icon}@4x.png`;
+            locals.imgURL = `//openweathermap.org/img/wn/${response.data.weather[0].icon}@4x.png`;
 
             // login info
             locals.logged = req.user ? true : false;
