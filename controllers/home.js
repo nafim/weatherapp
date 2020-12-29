@@ -10,6 +10,11 @@ app.get('/', (req, res, next) => {
         appid: process.env.OWM_API_KEY
     });
 
+    if (zip.length !== 5) {
+        req.flash('alert', 'Invalid zipcode');
+        return res.redirect('/');
+    }
+
     axios('http://api.openweathermap.org/data/2.5/weather?' + queryParams)
         .then(response => {
             const locals = {};
@@ -33,14 +38,48 @@ app.get('/', (req, res, next) => {
             res.render('weather', locals);
         })
         .catch(error => {
+            // if invalid zipcode
+            if (error.response.data.cod === '404') {
+                req.flash('alert', 'Invalid zipcode');
+                return res.redirect('/');
+            }
             next(error);
         });
 });
 
-app.post('/save', (req, res) => {
-    User.findOne({ email: req.user.email }, (err, obj) => {
-        const userLocs = obj.locations ? obj.locations : [];
+const checkValidZip = (req, res, next) => {
+    const zip = req.body.addZip;
+    if (zip.length !== 5) {
+        req.flash('zipAlert', 'Invalid zipcode');
+        return res.redirect('/');
+    }
+    const queryParams = new URLSearchParams({
+        zip,
+        appid: process.env.OWM_API_KEY
+    });
+    axios('http://api.openweathermap.org/data/2.5/weather?' + queryParams)
+    .then(response => {
+        next();
+    })
+    .catch(error => {
+        // if invalid zipcode
+        if (error.response.data.cod === '404') {
+            req.flash('zipAlert', 'Invalid zipcode');
+            return res.redirect('/');
+        }
+        next(error);
+    });
+};
+
+app.post('/save',
+    checkValidZip,
+    (req, res) => {
+    // find the user to add zipcodes to
+    User.findOne({ email: req.user.email }, (err, user) => {
+        const userLocs = user.locations ? user.locations : [];
         const addZip = req.body.addZip;
+
+        // if zipcode exists, delete it, else add it to list of zipcodes
         const zipIndex = userLocs.indexOf(addZip);
         if (zipIndex === -1) {
             userLocs.push(addZip);
@@ -48,8 +87,8 @@ app.post('/save', (req, res) => {
             userLocs.splice(zipIndex, 1);
         }
 
-        obj.locations = userLocs;
-        obj.save();
+        user.locations = userLocs;
+        user.save();
         res.redirect('/');
     });
 });

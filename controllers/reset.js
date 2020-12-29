@@ -9,22 +9,21 @@ const crypto = require('crypto');
 const nodemailer = require("nodemailer");
 const mg = require("nodemailer-mailgun-transport");
 const pug = require("pug");
-const { nextTick } = require("process");
 
-function sendEmail(resetKey, cb) {
+function sendEmail(email, resetKey, cb) {
     const mailgunAuth = {
         auth: {
             api_key: process.env.MAILGUN_KEY,
-            domain: "sandboxd8451296b91644828b099e7657be3266.mailgun.org"
+            domain: process.env.EMAIL_DOMAIN
         }
     };
     const smtpTransport = nodemailer.createTransport(mg(mailgunAuth));
     const resetLink = `http://localhost:3000/passwordchange/${resetKey}`;
     const html = pug.renderFile("views/resetEmail.pug", {resetLink});
     const mailOptions = {
-        from: "admin@sandboxd8451296b91644828b099e7657be3266.mailgun.org",
-        to: "snrahman2010@gmail.com",
-        subject: "Weather app Password Reset",
+        from: `admin@${process.env.EMAIL_DOMAIN}`,
+        to: email,
+        subject: "Weather App Password Reset",
         html: html
     };
     smtpTransport.sendMail(mailOptions, function (error, response) {
@@ -42,7 +41,7 @@ function attemptPasswordReset(email, cb) {
         const resetKey = buf.toString('hex');
         user.resetKey = resetKey;
         user.save();
-        sendEmail(resetKey, cb);
+        sendEmail(email, resetKey, cb);
     });
 }
 

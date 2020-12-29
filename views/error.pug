@@ -10,5 +10,7 @@ head
       .card-body
         h1 Oops, an error occured
         p #{errorMessage}
+        form(action="/" method="get")
+          button.btn.btn-primary(type='submit') Home Page
         
 script(src='/js/bootstrap.bundle.min.js' integrity='sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW' crossorigin='anonymous')

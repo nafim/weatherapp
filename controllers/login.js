@@ -4,11 +4,12 @@ const axios = require("axios");
 const passport = require('passport');
 
 app.get('/login', (req, res) => {
+    if (req.user) return res.redirect('/');
     res.render('login');
 });
 
 app.post('/login', passport.authenticate('local', {
-    successsRedirect: '/',
+    successRedirect: '/',
     failureRedirect: '/login',
     failureFlash: 'Invalid username and password combination'
 }));

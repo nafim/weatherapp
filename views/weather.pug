@@ -36,6 +36,8 @@ head
     if logged
       .card.mx-auto(style='width: 18rem;')
         .card-body
+          if messages.zipAlert
+            .alert.alert-warning(role="alert") #{messages.zipAlert}
           h5.card-title Zipcodes
           form(action="/save" method="post")
             .input-group.input-group-sm.mb-3
