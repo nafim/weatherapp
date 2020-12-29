@@ -24,6 +24,7 @@ const validateUniqueEmail = (req, res, next) => {
 };
 
 app.get('/registration', (req, res) => {
+    if (req.user) return res.redirect('/');
     res.render('registration', { sitekey: process.env.RECAPTCHA_SITE });
 });
 

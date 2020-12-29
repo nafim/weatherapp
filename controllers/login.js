@@ -17,6 +17,6 @@ app.post('/login', passport.authenticate('local', {
 app.get('/user', (req, res) => {
     if (req.user) return res.send(req.user.email);
     res.send('not logged in');
-})
+});
 
 module.exports = app;
