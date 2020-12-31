@@ -1,8 +1,6 @@
 const express = require("express");
 const app = express.Router();
 const bodyParser = require('body-parser');
-const flash = require('express-flash');
-const cookieParser = require('cookie-parser');
 
 app.use(bodyParser.urlencoded({
     extended: false
@@ -46,28 +44,11 @@ passport.deserializeUser(function (_id, done) {
 const MongoStore = require('connect-mongo')(session);
 const mongoose = require('mongoose');
 
-
-app.use(cookieParser(process.env.SESSION_SECRET));
-app.use(session({ 
-    secret: process.env.SESSION_SECRET, 
-    resave: false, 
-    saveUninitialized: true, 
-    cookie: {
-        // 2 hours since unit is in milliseconds
-        maxAge: 2*60*1000 
-    },
-    store: new MongoStore({
-        mongooseConnection: mongoose.connection
-    })}
-    )
-);
 app.use(passport.initialize());
-app.use(passport.session());
-app.use(flash());
 
-app.use(require('./home'));
-app.use(require('./login'));
-app.use(require('./registration'));
-app.use(require('./reset'));
+app.use("/api", require('./api'));
+// app.use(require('./login'));
+// app.use(require('./registration'));
+// app.use(require('./reset'));
 
 module.exports = app;
