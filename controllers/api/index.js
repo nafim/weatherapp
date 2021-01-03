@@ -6,5 +6,6 @@ const cors = require('cors');
 app.use(cors());
 
 app.use(require('./weather'));
+app.use('/user', require('./user'))
 
 module.exports = app;

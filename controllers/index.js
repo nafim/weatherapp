@@ -30,16 +30,26 @@ passport.use(new LocalStrategy({
     }
 ));
 
-passport.serializeUser(function (user, done) {
-    done(null, user._id);
-});
-
-passport.deserializeUser(function (_id, done) {
-    User.findById(_id, function (err, user) {
-        done(err, user);
+// implement JWT strategy
+var JwtStrategy = require('passport-jwt').Strategy,
+    ExtractJwt = require('passport-jwt').ExtractJwt;
+var opts = {}
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.secretOrKey = process.env.JWT_SECRET;
+opts.audience = 'weather.nafimrahman.com';
+passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
+    User.findOne({email: jwt_payload.sub}, function(err, user) {
+        if (err) {
+            return done(err, false);
+        }
+        if (user) {
+            return done(null, user);
+        } else {
+            return done(null, false);
+            // or you could create a new account
+        }
     });
-});
-
+}));
 
 const MongoStore = require('connect-mongo')(session);
 const mongoose = require('mongoose');

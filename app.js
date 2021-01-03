@@ -30,7 +30,7 @@ const notFoundHandler = (req, res, next) => {
 
 // Error handler
 const errorHandler = (err, req, res, next) => {
-  return res.status(500).json({error: "Internal Server error."});
+  return res.status(500).json({error: "Something went wrong, please try again"});
 };
 
 app.use(notFoundHandler);
