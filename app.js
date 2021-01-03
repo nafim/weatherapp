@@ -1,11 +1,9 @@
 const express = require('express');
 const app = express();
-const cookieParser = require('cookie-parser');
 require('dotenv').config();
-app.use(cookieParser());
 app.use(require('./controllers'));
 
-const port = 3000;
+const port = 4000;
 
 // Connect to database
 const mongoose = require('mongoose');
@@ -19,8 +17,6 @@ db.once('open', function() {
   console.log("we're connected!");
 });
 
-// set rendering engine
-app.set('view engine', 'pug');
 
 // static file serve
 app.use(express.static('public'));
@@ -29,13 +25,12 @@ app.use(require('./controllers'));
 
 // Error handler
 const notFoundHandler = (req, res, next) => {
-  return res.render('error', {errorMessage: "Error 404"});
+  return res.status(404).json({error: "Endpoint not found"});
 };
 
 // Error handler
 const errorHandler = (err, req, res, next) => {
-  console.error(err.toString());
-  return res.render('error', {errorMessage: "We are very sorry for any inconveniences, please try again later."});
+  return res.status(500).json({error: "Something went wrong, please try again"});
 };
 
 app.use(notFoundHandler);

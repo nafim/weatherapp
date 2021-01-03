@@ -1,8 +1,6 @@
 const express = require("express");
 const app = express.Router();
 const bodyParser = require('body-parser');
-const flash = require('express-flash');
-const cookieParser = require('cookie-parser');
 
 app.use(bodyParser.urlencoded({
     extended: false
@@ -32,42 +30,35 @@ passport.use(new LocalStrategy({
     }
 ));
 
-passport.serializeUser(function (user, done) {
-    done(null, user._id);
-});
-
-passport.deserializeUser(function (_id, done) {
-    User.findById(_id, function (err, user) {
-        done(err, user);
+// implement JWT strategy
+var JwtStrategy = require('passport-jwt').Strategy,
+    ExtractJwt = require('passport-jwt').ExtractJwt;
+var opts = {}
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.secretOrKey = process.env.JWT_SECRET;
+opts.audience = 'weather.nafimrahman.com';
+passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
+    User.findOne({email: jwt_payload.sub}, function(err, user) {
+        if (err) {
+            return done(err, false);
+        }
+        if (user) {
+            return done(null, user);
+        } else {
+            return done(null, false);
+            // or you could create a new account
+        }
     });
-});
-
+}));
 
 const MongoStore = require('connect-mongo')(session);
 const mongoose = require('mongoose');
 
-
-app.use(cookieParser(process.env.SESSION_SECRET));
-app.use(session({ 
-    secret: process.env.SESSION_SECRET, 
-    resave: false, 
-    saveUninitialized: true, 
-    cookie: {
-        // 2 hours since unit is in milliseconds
-        maxAge: 2*60*1000 
-    },
-    store: new MongoStore({
-        mongooseConnection: mongoose.connection
-    })}
-    )
-);
 app.use(passport.initialize());
-app.use(passport.session());
-app.use(flash());
 
-app.use(require('./home'));
-app.use(require('./login'));
-app.use(require('./registration'));
-app.use(require('./reset'));
+app.use("/api", require('./api'));
+// app.use(require('./login'));
+// app.use(require('./registration'));
+// app.use(require('./reset'));
 
 module.exports = app;

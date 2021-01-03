@@ -1,7 +1,5 @@
 const express = require("express");
 const app = express.Router();
-const axios = require("axios");
-const passport = require('passport');
 const validateRecaptcha = require('../middlewares/recaptcha').validateRecaptcha;
 const { body, validationResult } = require('express-validator');
 const User = require('../models/user');
@@ -77,8 +75,8 @@ app.post('/reset',
         if (!req.recaptchaVerified) {
             req.flash('error', 'Failed recaptcha check');
             return res.redirect('/reset');
-        } else if (errors.mapped().password) {
-            req.flash('error', 'Invalid Password');
+        } else if (errors.mapped().email) {
+            req.flash('error', 'Invalid Email');
             return res.redirect('/reset');
         } else {
             attemptPasswordReset(req.body.email, (err) => {
