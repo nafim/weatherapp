@@ -15,7 +15,7 @@ function sendEmail(email, resetKey, cb) {
         }
     };
     const smtpTransport = nodemailer.createTransport(mg(mailgunAuth));
-    const resetLink = `http://localhost:3000/changePassword/${resetKey}`;
+    const resetLink = `${process.env.WEBSITE_NAME}/changePassword/${resetKey}`;
     const html = pug.renderFile("views/resetEmail.pug", {resetLink});
     const mailOptions = {
         from: `admin@${process.env.EMAIL_DOMAIN}`,
